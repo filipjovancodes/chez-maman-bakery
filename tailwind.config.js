@@ -1,6 +1,14 @@
 module.exports = {
   // purge: ['./pages/**/*.js', './components/**/*.js'],
-  darkMode: false, // or 'media' or 'class'
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+    './context/**/*.{js,ts,jsx,tsx}',
+    './layouts/**/*.{js,ts,jsx,tsx}',
+    './utils/**/*.{js,ts,jsx,tsx}',
+    // Add any other directories with Tailwind CSS classes
+  ],
+  darkMode: 'media', // or 'media' or 'class'
   theme: {
     extend: {
       spacing: {
