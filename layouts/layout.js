@@ -3,6 +3,8 @@ import { slugify } from '../utils/helpers'
 import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer } from 'react-toastify'
 import { navItemLength } from '../ecommerce.config'
+import { Analytics } from '@vercel/analytics/react';
+
 
 export default function Layout({ children, categories }) {
   if (categories.length > navItemLength) {
@@ -87,6 +89,7 @@ export default function Layout({ children, categories }) {
         </div>
       </footer>
       <ToastContainer autoClose={3000} />
+      <Analytics />
     </div>
   );
 }
