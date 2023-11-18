@@ -38,5 +38,3 @@ yarn-error.log*
 .serverless_nextjs
 
 package-lock.json
-
-.env
