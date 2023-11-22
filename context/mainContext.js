@@ -82,6 +82,14 @@ class ContextProviderComponent extends React.Component {
     this.forceUpdate()
   }
 
+  isProductInCart = (product) => {
+    if (typeof window !== 'undefined') {
+      const storageState = JSON.parse(window.localStorage.getItem(STORAGE_KEY))
+      const { cart } = storageState
+      return cart.some((cartItem) => cartItem.id === product.id);
+    }
+  }
+
   render() {
     let state = initialState
     if (typeof window !== 'undefined') {
@@ -94,10 +102,11 @@ class ContextProviderComponent extends React.Component {
     return (
       <SiteContext.Provider value={{
         ...state,
-         addToCart: this.addToCart,
-         clearCart: this.clearCart,
-         removeFromCart: this.removeFromCart,
-         setItemQuantity: this.setItemQuantity
+        addToCart: this.addToCart,
+        clearCart: this.clearCart,
+        removeFromCart: this.removeFromCart,
+        setItemQuantity: this.setItemQuantity,
+        isProductInCart: this.isProductInCart,
       }}>
        {this.props.children}
      </SiteContext.Provider>

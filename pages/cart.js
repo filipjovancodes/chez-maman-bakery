@@ -158,7 +158,7 @@ const Cart = ({ context }) => {
   </>;
 }
 
-function CartWithContext(props) {
+export function CartWithContext(props) {
   return (
     <ContextProviderComponent>
       <SiteContext.Consumer>
