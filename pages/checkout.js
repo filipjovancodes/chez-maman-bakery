@@ -15,6 +15,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js"
 import { loadStripe } from "@stripe/stripe-js"
+const { createCustomer, createOrder } = require('./api/shopify');
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
@@ -58,6 +59,24 @@ const Input = ({ onChange, value, name, placeholder }) => (
   />
 )
 
+const InputWithLabel = ({ label, onChange, value, name, type = "text" }) => (
+  <div className="mb-3">
+    <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+      {label}
+    </label>
+    <input
+      id={name}
+      name={name}
+      type={type}
+      required
+      className="mt-2 text-sm shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      placeholder={label}
+      onChange={onChange}
+      value={value}
+    />
+  </div>
+);
+
 const Checkout = ({ context }) => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [orderCompleted, setOrderCompleted] = useState(false)
@@ -72,8 +91,6 @@ const Checkout = ({ context }) => {
 
   const stripe = useStripe()
   const elements = useElements()
-
-  const [paymentMethod, setPaymentMethod] = useState('Stripe'); // Default to Stripe
 
   // PayPal payment handling
   const createPayPalOrder = (data, actions) => {
@@ -98,13 +115,13 @@ const Checkout = ({ context }) => {
 
 
   const onChange = e => {
-    setErrorMessage(null)
+    if (errorMessage) setErrorMessage(null)
     setInput({ ...input, [e.target.name]: e.target.value })
   }
 
   const handleSubmit = async event => {
     event.preventDefault()
-    const { name, street, city, postal_code, state, email, phone } = input
+    const { first_name, last_name, street, city, postal_code, state, email, phone } = input
     const { total, clearCart } = context
 
     if (!stripe || !elements) {
@@ -113,23 +130,46 @@ const Checkout = ({ context }) => {
       return
     }
 
-    // Validate input
-    if (!name || !email || !street || !city || !postal_code || !state || !phone) {
-      setErrorMessage("Please fill in the entire form!");
+    // Basic form validations with regex
+    if (!first_name) {
+      setErrorMessage("Please enter your first name.");
       return;
-    }  
+    }
+    if (!last_name) {
+      setErrorMessage("Please enter your last name.");
+      return;
+    }
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+    if (!street) {
+      setErrorMessage("Please enter a valid street address.");
+      return;
+    }
+    if (!city || !/^[A-Za-z]+(?:[\s-][A-Za-z]+)*$/.test(city)) {
+      setErrorMessage("Please enter a valid city.");
+      return;
+    }
+    if (!state || !/^[A-Z]{2}$/.test(state)) {
+      setErrorMessage("Please enter a valid state abbreviation (WA, CA, etc.)");
+      return;
+    }
+    if (!postal_code || !/^\d{5}(-\d{4})?$/.test(postal_code)) {
+      setErrorMessage("Please enter a valid postal code.");
+      return;
+    }
+    if (!phone || !/^\+?[1-9]\d{1,14}$/.test(phone)) {
+      setErrorMessage("Please enter a valid phone number.");
+      return;
+    }
 
-    // Get a reference to a mounted CardElement. Elements knows how
-    // to find your CardElement because there can only ever be one of
-    // each type of element.
     const cardElement = elements.getElement(CardElement)
-
-    // Use your card Element with other Stripe.js APIs
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: "card",
       card: cardElement,
       billing_details: {
-        name: name,
+        name: first_name.concat(" ", last_name),
         email: email,              // Customer's email address
         phone: phone,              // Customer's phone number
         address: {                 // Customer's billing address
@@ -148,33 +188,70 @@ const Checkout = ({ context }) => {
       return
     }
 
-    // TODO add to database
-    const order = {
-      email,
-      amount: total, // Ensure this is in the smallest currency unit (e.g., cents for USD)
-      address: { street, city, postal_code, state },
-      payment_method_id: paymentMethod.id,
-      receipt_email: email,
-      id: uuid(),
-    };
-
     try {
-      // Replace '/api/payment' with your actual server-side endpoint
-      const response = await fetch('/api/stripe', {
+      // Create payment intent and confirm payment with Stripe
+      const stripe_response = await fetch('/api/stripe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({amount: total, payment_method_id: paymentMethod.id}),
+        body: JSON.stringify({ amount: total, payment_method_id: paymentMethod.id }),
       });
-  
-      const paymentResponse = await response.json();
-  
-      if (paymentResponse.error) {
-        setErrorMessage(paymentResponse.error);
+
+      const stripePaymentResponse = await stripe_response.json();
+
+      if (stripePaymentResponse.error) {
+        console.log(stripePaymentResponse.error);
         return;
       }
-  
+
+      console.log(stripe_response)
+
+      // Create customer and order in Shopify
+      const response = await fetch('/api/shopify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customerData: {
+            first_name: first_name,
+            last_name: last_name,
+            email: email,
+            phone: phone,
+            default_address: {
+              name: first_name.concat(" ", last_name),
+              address1: street,
+              city: city,
+              province: state,
+              postal_code: postal_code,
+              country: "United States",
+            },
+          },
+          lineItems: cart.map(item => ({
+            name: item.name,
+            variant_id: item.variant_id, // Make sure this corresponds to your data structure
+            price: item.price,
+            quantity: item.quantity
+          }))
+        }),
+      });
+
+      const shopifyResponse = await response.json();
+
+      console.log(shopifyResponse)
+
+      if (shopifyResponse.errors) {
+        // Concatenate all error messages into a single string
+        let errorMessages = Object.keys(shopifyResponse.errors)
+                                  .map(key => `${key}: ${shopifyResponse.errors[key].join(', ')}`)
+                                  .join('; ');
+    
+        console.log(errorMessages);
+        return;
+    }
+
+      // Handle successful order creation
       setOrderCompleted(true);
       clearCart();
     } catch (apiError) {
@@ -193,45 +270,29 @@ const Checkout = ({ context }) => {
     )
   }
 
-  const PaymentMethodSelector = () => (
-    <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} className="mb-4">
-      <option value="Stripe">Stripe</option>
-      <option value="PayPal">PayPal</option>
-    </select>
-  );
-
   const renderStripeForm = () => (
     <div className="flex flex-1 pt-8 flex-col">
       <div className="mt-4 border-t pt-10">
         <form onSubmit={handleSubmit}>
           {errorMessage && <span>{errorMessage}</span>}
   
-          {/* Name Input */}
-          <Input
-            onChange={onChange}
-            value={input.name}
-            name="name"
-            placeholder="Cardholder name"
-          />
-  
-          {/* Stripe Card Element */}
+          {/* Form Inputs */}
+          <InputWithLabel label="First Name" onChange={onChange} value={input.first_name} name="first_name" placeholder="First Name" />
+          <InputWithLabel label="Last Name" onChange={onChange} value={input.last_name} name="last_name" placeholder="Last Name" />
           <CardElement className="mt-2 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-  
-          {/* Additional Inputs */}
-          <Input onChange={onChange} value={input.email} name="email" placeholder="Email" />
-          <Input onChange={onChange} value={input.street} name="street" placeholder="Street Address" />
-          <Input onChange={onChange} value={input.city} name="city" placeholder="City" />
-          <Input onChange={onChange} value={input.state} name="state" placeholder="State" />
-          <Input onChange={onChange} value={input.postal_code} name="postal_code" placeholder="Postal Code" />
-          <Input onChange={onChange} value={input.phone} name="phone" placeholder="Phone" />
-  
+          <InputWithLabel label="Email" onChange={onChange} value={input.email} name="email" placeholder="Email" />
+          <InputWithLabel label="Street Address" onChange={onChange} value={input.street} name="street" placeholder="Street Address" />
+          <InputWithLabel label="City" onChange={onChange} value={input.city} name="city" placeholder="City" />
+          <InputWithLabel label="State" onChange={onChange} value={input.state} name="state" placeholder="State" />
+          <InputWithLabel label="Postal Code" onChange={onChange} value={input.postal_code} name="postal_code" placeholder="Postal Code" />
+          <InputWithLabel label="Phone" onChange={onChange} value={input.phone} name="phone" placeholder="" />
+
           {/* Submit Button */}
           <button
-            name="submit"
-            disabled={!stripe}
+            name="submit-button"
             onClick={handleSubmit}
-            className="hidden md:block bg-primary hover:bg-black text-white font-bold py-2 px-4 mt-4 rounded focus:outline-none focus:shadow-outline"
-            type="button"
+            className="text-center bg-primary hover:bg-black text-white font-bold py-2 px-4 mt-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
           >
             Confirm order
           </button>
@@ -241,11 +302,16 @@ const Checkout = ({ context }) => {
   );
   
   const renderPayPalForm = () => (
-    <PayPalScriptProvider options={{ "client-id": "YOUR_CLIENT_ID" }}>
-      <PayPalButtons
-        createOrder={(data, actions) => createPayPalOrder(data, actions)}
-        onApprove={(data, actions) => onApprovePayPal(data, actions)}
-      />
+    <PayPalScriptProvider options={{ "client-id": process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID }}>
+      <div className="my-4">
+        <h2 className="text-center text-sm mb-2"> - OR - </h2>
+        <PayPalButtons
+          createOrder={(data, actions) => createPayPalOrder(data, actions)}
+          onApprove={(data, actions) => onApprovePayPal(data, actions)}
+          style={{ layout: 'horizontal' }}
+          disableFunding="card"
+        />
+      </div>
     </PayPalScriptProvider>
   );
 
@@ -269,11 +335,10 @@ const Checkout = ({ context }) => {
 
   const renderPaymentForm = () => (
     <div className="flex flex-1 flex-col md:flex-row">
-      <PaymentMethodSelector />
-      {paymentMethod === 'Stripe' ? renderStripeForm() : renderPayPalForm()}
+      {renderStripeForm()}
+      {/* {renderPayPalForm()} */}
     </div>
   );
-
 
   return (
     <div className="flex flex-col items-center pb-10">

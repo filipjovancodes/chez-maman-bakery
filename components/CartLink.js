@@ -22,11 +22,11 @@ function CartLink(props) {
             <FaShoppingCart />
 
           </Link>
-          {
-            renderClientSideComponent && numberOfItemsInCart > Number(0) && (
-              <FaCircle color={primary} size={12} suppressHydrationWarning />
-            )
-          }
+          {renderClientSideComponent && numberOfItemsInCart > 0 && (
+            <span className="absolute top-0 right-0 bg-primary text-white rounded-full p-1 text-xs">
+              {numberOfItemsInCart}
+            </span>
+          )}
         </div>
       </div>
     </div>

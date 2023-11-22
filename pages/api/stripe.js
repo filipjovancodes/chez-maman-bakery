@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       },
     });
     
-    // TODO create customer in stripe and implement logic for dropshipping
+    // TODO create customer and order in shopify
 
     // // This creates a new Customer and attaches the PaymentMethod in one API call.
     // const customer = await stripe.customers.create({
