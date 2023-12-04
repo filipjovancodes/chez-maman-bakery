@@ -13,6 +13,11 @@ const OrderSuccessPage = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <Head>
+        <title>AutoRoll</title>
+        <meta name="description" content={`AutoRoll - Success`} />
+        <meta property="og:title" content="AutoRoll - Success" key="title" />
+      </Head>
       <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col">
         <div className="mb-4">
           <h1 className="text-2xl font-bold">Thank you for your order!</h1>

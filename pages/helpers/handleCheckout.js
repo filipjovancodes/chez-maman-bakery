@@ -2,7 +2,7 @@ const baseUrl = process.env.NEXT_PUBLIC_NODE_ENV === 'production'
   ? `https://${process.env.NEXT_PUBLIC_BASE_URL}`
   : `http://${process.env.NEXT_PUBLIC_BASE_URL}`;
 
-export const handleCheckout = async ({cart, stripePromise}) => {
+const handleCheckout = async ({cart, stripePromise}) => {
 
     console.log(cart)
 
@@ -34,3 +34,6 @@ export const handleCheckout = async ({cart, stripePromise}) => {
       console.error(result.error.message);
     }
   };
+
+
+export default handleCheckout

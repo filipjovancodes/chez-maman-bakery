@@ -9,7 +9,10 @@ import Image from '../components/Image'
 import Head from 'next/head'
 import CartLink from '../components/CartLink'
 import { loadStripe } from '@stripe/stripe-js';
-import { handleCheckout } from './helpers/handleCheckout'
+
+const baseUrl = process.env.NEXT_PUBLIC_NODE_ENV === 'production' 
+  ? `https://${process.env.NEXT_PUBLIC_BASE_URL}`
+  : `http://${process.env.NEXT_PUBLIC_BASE_URL}`;
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
@@ -34,15 +37,48 @@ const Cart = ({ context }) => {
     setItemQuantity(item)
   }
 
+  const handleCheckout = async () => {
+
+    console.log(cart)
+
+    const cartItems = cart.map(item => ({
+      name: item.name,
+      amount: item.price * 100, // Convert price to cents
+      currency: 'usd',
+      quantity: item.quantity,
+      variant_id: item.variant_id, // Add variant_id in description
+    }));
+
+    const stripe = await stripePromise;
+
+    // Call your backend endpoint
+    const response = await fetch(`${baseUrl}/api/stripe_checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ cartItems: cartItems }), // Send necessary data
+    });
+    const { sessionId } = await response.json();
+
+    // Redirect to Stripe Checkout
+    const result = await stripe.redirectToCheckout({ sessionId });
+    
+    if (result.error) {
+      // Handle any errors that occur during redirection
+      console.error(result.error.message);
+    }
+  };
+
   if (!renderClientSideComponent) return null
 
   return <>
     <CartLink />
     <div className="flex flex-col items-center pb-10">
       <Head>
-        <title>Jamstack ECommerce - Cart</title>
-        <meta name="description" content={`Jamstack ECommerce - Shopping cart`} />
-        <meta property="og:title" content="Jamstack ECommerce - Cart" key="title" />
+        <title>AutoRoll</title>
+        <meta name="description" content={`AutoRoll - Cart`} />
+        <meta property="og:title" content="AutoRoll - Cart" key="title" />
       </Head>
       <div className="
         flex flex-col w-full
@@ -146,7 +182,7 @@ const Cart = ({ context }) => {
         </div>
         {!cartEmpty && (
           <div
-            onClick={() => handleCheckout({cart: cart, stripePromise: stripePromise})}
+            onClick={() => handleCheckout(cart, stripePromise)}
             className="cursor-pointer flex items-center justify-end"
             aria-label="Proceed to check out">
               <p className="text-gray-600 text-sm mr-2">Proceed to check out</p>

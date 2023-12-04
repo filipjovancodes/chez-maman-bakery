@@ -12,7 +12,7 @@ import { useRouter } from 'next/router'; // Import useRouter
 
 const ItemView = (props) => {
   const [numberOfitems, updateNumberOfItems] = useState(1)
-  const { product } = props
+  const { product, title } = props
   const { price, image, name, description } = product
   const { context: { addToCart, isProductInCart }} = props
   const router = useRouter(); // Initialize useRouter
@@ -37,6 +37,11 @@ const ItemView = (props) => {
 
   return (
     <>
+      <Head>
+        <title>AutoRoll</title>
+        <meta name="description" content={`AutoRoll - ${title}`} />
+        <meta property="og:title" content={`AutoRoll - ${title}`} key="title" />
+      </Head>
       <CartLink />
       <div className="sm:py-12 md:flex-row py-4 w-full flex flex-1 flex-col my-0 mx-auto">
         <div className="w-full md:w-1/2 h-120 flex flex-1 bg-light hover:bg-light-200">
