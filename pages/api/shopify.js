@@ -4,17 +4,17 @@ const SHOPIFY_ACCESS_TOKEN = process.env.NEXT_PUBLIC_SHOPIFY_ACCESS_TOKEN;
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         try {
-            const { customerData, lineItems } = req.body;
+            const { customerData, lineItems, shipping, tax } = req.body;
 
             let customerResponse;
 
             customerResponse = await createCustomer(customerData);
 
             if (customerResponse.errors.email.includes('has already been taken')) {
-                customerResponse = await updateCustomer(customerData.email, customerData);
+                customerResponse = await updateCustomer(customerData.email, customerData, shipping, tax);
             }
 
-            const orderResponse = await createOrder(customerData, lineItems);
+            const orderResponse = await createOrder(customerData, lineItems, shipping, tax);
 
             res.status(200).json(orderResponse);
         } catch (error) {
@@ -39,13 +39,21 @@ const createCustomer = async (customerData) => {
     return response.json();
 };
 
-const createOrder = async (customerData, lineItems) => {
+const createOrder = async (customerData, lineItems, shipping, tax) => {
+    const shippingLines = [{
+        title: "Standard Shipping", // The title of your shipping method
+        price: shipping, // The cost of shipping
+        code: "STANDARD", // An identifier for the shipping method, if you have one
+    }];
+
     const orderData = {
         line_items: lineItems,
         customer: customerData,
-        billing_address: customerData.default_address,
-        shipping_address: customerData.default_address,
+        billing_address: customerData.billing_address,
+        shipping_address: customerData.shipping_address,
         financial_status: "paid",
+        shipping_lines: shippingLines,
+        total_tax: tax,
     };
 
     const response = await fetch(`https://${SHOPIFY_STORE}/admin/api/2023-04/orders.json`, {

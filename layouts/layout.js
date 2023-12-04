@@ -21,12 +21,12 @@ export default function Layout({ children, categories }) {
             <div className="mb-4 sm:mr-16 max-w-48 sm:max-w-none">
               <Link href="/" aria-label="Home">
 
-                <img src="/logo.png" alt="logo" width="90" height="28" />
+                <img src="/logo.webp" alt="logo" width="90" height="28" />
 
               </Link>
             </div>
             <div className="flex flex-wrap mt-1">
-              <Link href="/" aria-label="Home">
+              {/* <Link href="/" aria-label="Home">
 
                 <p className="
                   sm:mr-8 sm:mb-0
@@ -35,7 +35,7 @@ export default function Layout({ children, categories }) {
                 Home
                 </p>
 
-              </Link>
+              </Link> */}
               {
                 categories.map((category, index) => (
                   (<Link href={`/category/${slugify(category)}`} key={index} aria-label={category}>
@@ -50,7 +50,7 @@ export default function Layout({ children, categories }) {
                   </Link>)
                 ))
               }
-              <Link href="/categories" aria-label="All categories">
+              {/* <Link href="/categories" aria-label="All categories">
 
                 <p className="
                   sm:mr-8 sm:mb-0
@@ -59,6 +59,14 @@ export default function Layout({ children, categories }) {
                 All
                 </p>
 
+              </Link> */}
+              <Link href="/cart" aria-label="cart">
+                <p className="
+                  sm:mr-8 sm:mb-0
+                  mb-4 text-left text-smaller mr-4 
+                ">
+                Cart
+                </p>
               </Link>
             </div>
           </div>
@@ -75,16 +83,16 @@ export default function Layout({ children, categories }) {
         desktop:px-0
         border-solid
         border-t border-gray-300">
-          <span className="block text-gray-700 text-xs">Copyright © 2021 JAMstack Ecommerce. All rights reserved.</span>
+          <span className="block text-gray-700 text-xs">Copyright © 2024 AutoRoll. All rights reserved.</span>
           <div className="
             sm:justify-end sm:m-0
             flex flex-1 mt-4
           ">
-            <Link href="/admin" aria-label="Admin panel">
+            {/* <Link href="/admin" aria-label="Admin panel">
 
               <p className="text-sm font-semibold">Admins</p>
 
-            </Link>
+            </Link> */}
           </div>
         </div>
       </footer>

@@ -8,6 +8,10 @@ import QuantityPicker from '../components/QuantityPicker'
 import Image from '../components/Image'
 import Head from 'next/head'
 import CartLink from '../components/CartLink'
+import { loadStripe } from '@stripe/stripe-js';
+import { handleCheckout } from './helpers/handleCheckout'
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 const Cart = ({ context }) => {
   const [renderClientSideComponent, setRenderClientSideComponent] = useState(false)
@@ -141,24 +145,20 @@ const Cart = ({ context }) => {
           <p className="font-semibold tracking-wide">{DENOMINATION + total}</p>
         </div>
         {!cartEmpty && (
-          (<Link
-            href="/checkout"
-            className="flex flex-1 justify-end"
-            aria-label="Check out">
-
-            <div className="cursor-pointer flex items-center">
+          <div
+            onClick={() => handleCheckout({cart: cart, stripePromise: stripePromise})}
+            className="cursor-pointer flex items-center justify-end"
+            aria-label="Proceed to check out">
               <p className="text-gray-600 text-sm mr-2">Proceed to check out</p>
               <FaLongArrowAltRight className="text-gray-600" />
-            </div>
-
-          </Link>)
+          </div>
         )}
       </div>
     </div>
   </>;
 }
 
-export function CartWithContext(props) {
+function CartWithContext(props) {
   return (
     <ContextProviderComponent>
       <SiteContext.Consumer>

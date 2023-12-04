@@ -4,9 +4,31 @@ import { titleIfy, slugify } from '../../utils/helpers'
 import fetchCategories from '../../utils/categoryProvider'
 import inventoryForCategory from '../../utils/inventoryForCategory'
 import CartLink from '../../components/CartLink'
+import { useEffect, useContext } from 'react'
+import { SiteContext } from '../../context/mainContext';
+import { useRouter } from 'next/router'; // Import useRouter
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 const Category = (props) => {
+
   const { inventory, title } = props
+  const { cart, addToCart, isProductInCart } = useContext(SiteContext); // Access addToCart from SiteContext
+  const router = useRouter(); // Initialize useRouter
+  
+  useEffect(() => {
+  }, []);
+
+  const handleAddToCart = (product, render_bool) => {
+    if (!isProductInCart(product)) {
+      addToCart({ ...product, quantity: 1 }); 
+    } else {
+      // Redirect to /cart if item is already added to cart
+      router.push('/cart');
+    }
+  };
+
   return (
     <>
       <CartLink />
@@ -28,10 +50,11 @@ const Category = (props) => {
                   return (
                     <ListItem
                       key={index}
-                      link={`/product/${slugify(item.name)}`}
-                      title={item.name}
-                      price={item.price}
-                      imageSrc={item.image}
+                      item={item}
+                      handleAddToCart={handleAddToCart}
+                      isProductInCart={isProductInCart}
+                      cart={cart}
+                      stripePromise={stripePromise}
                     />
                   )
                 })
