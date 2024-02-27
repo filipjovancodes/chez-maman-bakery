@@ -14,6 +14,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 const Category = (props) => {
 
   const { inventory, title } = props
+  const groupedInventory = groupItemsByName(inventory);
   const { cart, addToCart, isProductInCart } = useContext(SiteContext); // Access addToCart from SiteContext
   const router = useRouter(); // Initialize useRouter
   
@@ -33,9 +34,9 @@ const Category = (props) => {
     <>
       <CartLink />
       <Head>
-        <title>AutoRoll</title>
-        <meta name="description" content={`AutoRoll - ${title}`} />
-        <meta property="og:title" content={`AutoRoll - ${title}`} key="title" />
+        <title>Chez Maman Bakery</title>
+        <meta name="description" content={`Chez Maman Bakery - ${title}`} />
+        <meta property="og:title" content={`Chez Maman Bakery - ${title}`} key="title" />
       </Head>
       <div className="flex flex-col items-center">
         <div className="max-w-fw flex flex-col w-full">
@@ -46,11 +47,11 @@ const Category = (props) => {
           <div>
             <div className="flex flex-1 flex-wrap flex-row">
               {
-                inventory.map((item, index) => {
+                Object.values(groupedInventory).map((items, index) => {
                   return (
                     <ListItem
                       key={index}
-                      item={item}
+                      items={items}
                       handleAddToCart={handleAddToCart}
                       isProductInCart={isProductInCart}
                       cart={cart}
@@ -88,5 +89,15 @@ export async function getStaticProps ({ params }) {
     }
   }
 }
+
+const groupItemsByName = (inventory) => {
+  return inventory.reduce((acc, item) => {
+    if (!acc[item.name]) {
+      acc[item.name] = [];
+    }
+    acc[item.name].push(item);
+    return acc;
+  }, {});
+};
 
 export default Category

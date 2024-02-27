@@ -1,17 +1,18 @@
 import Link from 'next/link';
+import Head from 'next/head';
 
 const Custom404 = () => {
     return (
         <div className="container mx-auto p-4">
-        <Head>
-          <title>AutoRoll</title>
-          <meta name="description" content={`AutoRoll - 404 Not Found`} />
-          <meta property="og:title" content="AutoRoll - 404 Note Found" key="title" />
-        </Head>
-        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col">
-          <div className="mb-4">
-            <h1 className="text-2xl font-bold">Oops! The page you are looking for does not exist.</h1>
-          </div>
+          <Head>
+            <title>Chez Maman Bakery - 404 Not Found</title>
+            <meta name="description" content={`Chez Maman Bakery - 404 Not Found`} />
+            <meta property="og:title" content="Chez Maman Bakery - 404 Not Found" key="title" />
+          </Head>
+          <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col">
+            <div className="mb-4">
+              <h1 className="text-2xl font-bold">Oops! The page you are looking for does not exist.</h1>
+            </div>
   
           <div className="flex justify-between items-center">
             <Link href="/">

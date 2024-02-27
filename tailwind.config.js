@@ -175,11 +175,16 @@ module.exports = {
         'primary': '#89bdf9',
         'light': '#f5f5f5',
         'light-200': '#f0f0f0',
-        'light-300': '#e8e8e8'
+        'light-300': '#e8e8e8',
+        'light-blue': '#A1D8D5',
+        'mint-green': '#B8D9B8',
        },
        lineHeight: {
         'large': '54px'
-       }
+       },
+       colors: {
+        'light-blue': '#A1D8D5',
+       },
     },
   },
   plugins: [],

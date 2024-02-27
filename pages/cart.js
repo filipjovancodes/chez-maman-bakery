@@ -10,10 +10,6 @@ import Head from 'next/head'
 import CartLink from '../components/CartLink'
 import { loadStripe } from '@stripe/stripe-js';
 
-const baseUrl = process.env.NEXT_PUBLIC_NODE_ENV === 'production' 
-  ? `https://${process.env.NEXT_PUBLIC_BASE_URL}`
-  : `http://${process.env.NEXT_PUBLIC_BASE_URL}`;
-
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 const Cart = ({ context }) => {
@@ -37,22 +33,25 @@ const Cart = ({ context }) => {
     setItemQuantity(item)
   }
 
+  console.log(cart)
+
   const handleCheckout = async () => {
-
-    console.log(cart)
-
-    const cartItems = cart.map(item => ({
-      name: item.name,
-      amount: item.price * 100, // Convert price to cents
-      currency: 'usd',
-      quantity: item.quantity,
-      variant_id: item.variant_id, // Add variant_id in description
-    }));
+    const cartItems = cart.map(item => {
+      return {
+        name: Boolean(item.attributes) ? `${item.name} - ${attributeName}: ${attributeValue}` : item.name,
+        amount: item.price * 100, // Convert price to cents
+        currency: 'usd',
+        quantity: item.quantity,
+        variant_id: item.variant_id, // Add variant_id in description
+        // Add the attribute field if it exists
+        ...(Boolean(item.attributes) && { attribute: `${Object.keys(item.attributes)[0]}: ${item.attributes[attributeName]}` })
+      };
+     });
 
     const stripe = await stripePromise;
 
     // Call your backend endpoint
-    const response = await fetch(`${baseUrl}/api/stripe_checkout`, {
+    const response = await fetch('/api/stripe_checkout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -76,9 +75,9 @@ const Cart = ({ context }) => {
     <CartLink />
     <div className="flex flex-col items-center pb-10">
       <Head>
-        <title>AutoRoll</title>
-        <meta name="description" content={`AutoRoll - Cart`} />
-        <meta property="og:title" content="AutoRoll - Cart" key="title" />
+        <title>Chez Maman Bakery - Cart</title>
+        <meta name="description" content={`Chez Maman Bakery - Cart`} />
+        <meta property="og:title" content="Chez Maman Bakery - Cart" key="title" />
       </Head>
       <div className="
         flex flex-col w-full
@@ -110,6 +109,7 @@ const Cart = ({ context }) => {
                             m-0 pl-10 text-gray-600 w-60
                             ">
                               {item.name}
+                              {Boolean(item.attributes) && ` - ${item.attributes[Object.keys(item.attributes)[0]]}`}
                             </p>
 
                           </Link>
