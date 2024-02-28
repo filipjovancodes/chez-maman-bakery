@@ -57,22 +57,22 @@ const Home = ({ inventoryData = [], categories: categoryData = [] }) => {
         
         {/* Large photo and call to action section */}
         <div 
-          className="relative bg-light-blue opacity-80 p-6 pb-10 smpb-6 flex flex-col items-center justify-center mt-2"
+          className="relative bg-light-blue bg-light-yellow text-light-blue opacity-80 p-6 pb-10 smpb-6 flex flex-col items-center justify-center mt-2"
           style={{
-            width: '99vw', // 100% of the viewport width
+            width: '90vw', // 100% of the viewport width
             height: '60vh', // 100% of the viewport height
-            backgroundImage: 'url(/background.png)',
+            backgroundImage: 'url(/background1.jpeg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
           }}
         >
           {/* Tagline */}
-          <div className="text-5xl text-white mb-8 text-center p-4">Experience The Heavenly Delight of Sourdough Cookies</div>
+          <div className="text-5xl text-black mb-8 text-center p-4">Vancouver's Best Soft Cookies</div>
 
           {/* Shop Now Link */}
           <a 
-            className="text-white border border-white font-bold tracking-wider bg-transparent hover:bg-black text-black font-semibold hover:text-white py-4 px-12 border-2 border-black hover:border-transparent"
+            className="text-black border border-black font-bold tracking-wider bg-transparent hover:bg-black text-black font-semibold hover:text-white py-4 px-12 border-2 border-black hover:border-transparent"
             href="/categories"  // Link to the general category page
           >
             Shop Now
@@ -87,7 +87,7 @@ const Home = ({ inventoryData = [], categories: categoryData = [] }) => {
                 This is not your ordinary cookie
               </h2>
               <p className="mb-4 mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-                Welcome to Chez Maman Bakery, home to the finest sourdough cookies crafted with love and expertise. Indulge in the delightfully tangy flavor and irresistible texture of our sourdough cookies, each bite bursting with delight.
+                Welcome to Chez Maman Bakery, home to the finest sourdough cookies crafted with love and expertise. Sourdough is not sour! The sourdough makes the cookies soft so that when you take a bite it melts in your mouth.
               </p>
 
               <div class="text-gray-100">l</div>
@@ -98,36 +98,6 @@ const Home = ({ inventoryData = [], categories: categoryData = [] }) => {
               >
                 Shop Now
               </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Try Section */}
-        <div className="py-12 bg-white">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap items-center">
-            {/* Left Side (Text) */}
-            <div className="w-full lg:w-1/2 lg:text-center lg:pr-6">
-              <h2 className="text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-                Experience this
-              </h2>
-              <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-                When you bite into a sourdough cookie you'll soon realize what makes it so irresistible.
-              </p>
-
-              {/* Try it Link */}
-              <div className="flex justify-center mt-4">
-                <a 
-                  className="text-sm font-bold tracking-wider bg-transparent hover:bg-black text-black font-semibold hover:text-white py-4 px-12 border-2 border-black hover:border-transparent"
-                  href="/categories"  // Link to the general category page
-                >
-                  Try it
-                </a>
-              </div>
-            </div>
-            {/* Right Side (Image) */}
-            <div className="w-full lg:w-1/2 mt-6 lg:mt-0">
-              <img src="/experience.jpeg" alt="Image" className="mx-auto lg:max-w-full" />
-              {/* Replace "/your-image.jpg" with the path to your image */}
             </div>
           </div>
         </div>
@@ -161,20 +131,18 @@ const Home = ({ inventoryData = [], categories: categoryData = [] }) => {
               </p>
             </div>
           </div>
-        </div>
 
-        {/* Email input */}
-        <div className="bg-white py-12">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mt-12 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
             <div className="lg:text-center">
-              <h2 className="text-3xl leading-8 font-extrabold tracking-tight sm:text-4xl">
-                We are sweet
+              <h2 className="text-3xl leading-8 font-extrabold tracking-tight">
+                Join the softness revolution
               </h2>
               <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-                Join the family and get the sweetest offers, news and more!
+                Get offers, news, and more!
               </p>
             </div>
-            <div className="mt-12 max-w-lg mx-auto sm:flex sm:justify-center lg:justify-center">
+
+            <div className="mt-6 max-w-lg mx-auto sm:flex sm:justify-center lg:justify-center">
               <form className="sm:flex">
                 <input
                   aria-label="Email address"
@@ -192,11 +160,22 @@ const Home = ({ inventoryData = [], categories: categoryData = [] }) => {
               </form>
             </div>
           </div>
+        </div>
 
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mt-10 grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+        {/* Testimonials */}
+        <div className="py-12 bg-white">
+          <div className="text-3xl flex justify-center">
+            Check out what people are saying 
+          </div>
+
+          <div className="mt-2 text-yellow-500 text-3xl flex justify-center">
+            &#9733;&#9733;&#9733;&#9733;&#9733;
+          </div>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+          <div className="mt-4 grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
               {/* Testimonial 1 */}
-              <img className="rounded-lg shadow-lg overflow-hidden image-container" src="/testimonial1.jpeg" alt="Testimonial 1" onClick={() => enlargeImage("/testimonial1.jpeg")} />
+              {/* <img className="rounded-lg shadow-lg overflow-hidden image-container" src="/testimonial1.jpeg" alt="Testimonial 1" onClick={() => enlargeImage("/testimonial1.jpeg")} /> */}
               {/* Testimonial 2 */}
               <img className="rounded-lg shadow-lg overflow-hidden image-container" src="/testimonial2.jpeg" alt="Testimonial 2" onClick={() => enlargeImage("/testimonial2.jpeg")} />
               {/* Testimonial 3 */}
@@ -207,12 +186,6 @@ const Home = ({ inventoryData = [], categories: categoryData = [] }) => {
               <img className="rounded-lg shadow-lg overflow-hidden image-container" src="/testimonial5.jpeg" alt="Testimonial 5" onClick={() => enlargeImage("/testimonial5.jpeg")} />
             </div>
           </div>
-          
-        </div>
-
-        {/* Testimonials Picture Gallery */}
-        <div className="py-12 bg-white">
-          
         </div>
 
         {/* Trending Now section */}

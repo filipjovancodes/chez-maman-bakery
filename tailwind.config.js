@@ -184,6 +184,7 @@ module.exports = {
        },
        colors: {
         'light-blue': '#A1D8D5',
+        'light-yellow': '#FCE6AD',
        },
     },
   },
