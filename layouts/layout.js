@@ -4,6 +4,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { navItemLength } from '../ecommerce.config';
 import { Analytics } from '@vercel/analytics/react';
+import { useState, useEffect } from 'react';
+
+
 
 export default function Layout({ children, categories }) {
   if (categories.length > navItemLength) {
@@ -11,60 +14,39 @@ export default function Layout({ children, categories }) {
   }
   return (
     <div>
+
       <nav className="bg-light-blue">
         <div className="flex items-center">
           {/* <!-- Home and Category Links --> */}
-          <div className="flex items-center justify-center flex-1 ml-4">
-            
-          <Link href="/" aria-label="Home">
+          <div className="flex justify-center flex-1">
+            <Link href="/" aria-label="Home">
               <p className="text-white text-smaller ml-4 mr-4">Home</p>
             </Link>
-
             {categories.map((category, index) => (
               <Link href={`/category/${slugify(category)}`} key={index} aria-label={category}>
                 <p className="text-white text-smaller ml-4 mr-4">{category.charAt(0).toUpperCase() + category.slice(1)}</p>
               </Link>
             ))}
-
             <Link href="/categories" aria-label="All categories">
               <p className="text-white text-smaller ml-4 mr-4">All</p>
             </Link>
-
             <Link href="/contact" aria-label="Contact us">
               <p className="text-white text-smaller ml-4 mr-4">Contact</p>
             </Link>
-
             <Link href="/about-us" aria-label="About us">
               <p className="text-white text-smaller ml-4 mr-4">About Us</p>
             </Link>
-
             <Link href="/cart" aria-label="Cart">
               <p className="text-white text-smaller ml-4 mr-4">Cart</p>
             </Link>
-            
           </div>
 
-        {/* <!-- Logo --> */}
-        <div className="flex items-center justify-center flex-1">
-          {/* <div class="mr-4">Chez Maman Bakery</div> */}
-          <img src="/logo.ico" alt="logo" width="100" height="100"/> {/* style={{'border-radius': 100}} */}
-        </div>
-
-          <div className="flex items-center justify-center flex-1 ml-4">
-            <p className="text-light-blue text-smaller ml-4 mr-4">Home</p>
-
-            {categories.map((category, index) => (
-              <p className="text-light-blue text-smaller ml-4 mr-4">{category.charAt(0).toUpperCase() + category.slice(1)}</p>
-            ))}
-
-            <p className="text-light-blue text-smaller ml-4 mr-4">All</p>
-
-            <p className="text-light-blue text-smaller ml-4 mr-4">Contact</p>
-          
-            <p className="text-light-blue text-smaller ml-4 mr-4">About Us</p>
-
-            <p className="text-light-blue text-smaller ml-4 mr-4">Cart</p>
+          {/* <!-- Logo --> */}
+          <div className="justify-center flex-1">
+            <img src="/logo.ico" alt="logo" width="100" height="100" style={{ marginRight: '50px'}}/>
           </div>
+
+          <div style={{ width: '100px' }}></div>
 
         </div>
       </nav>

@@ -23,6 +23,7 @@ module.exports = {
         "140": "35rem",
         "144": "36rem",
         "fw": "1440px",
+        "mr-8": "50px",
       },
       fontSize: {
         'xxs': '.6rem',
